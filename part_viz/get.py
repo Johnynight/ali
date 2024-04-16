@@ -55,22 +55,22 @@ a = PartsViz(login='v363vc4', password='Vchurikov199707')
 b = a.parser()
 
 PV = []
-part_number = None
-facing_facility = None
-replacement_part = None
-entry_point = None
-part_description = None
-supplier_lead_time = None
-discontinued = None
-freezecode = None
-Constrained_Part_Score = None
-Search_Network = None
-Reman_Part = None
-Pkg_Qty = None
-
-
+cookies = b[1]
 for part in files:
-    cookies = b[1]
+
+    part_number = None
+    facing_facility = None
+    replacement_part = None
+    entry_point = None
+    part_description = None
+    supplier_lead_time = None
+    discontinued = None
+    freezecode = None
+    Constrained_Part_Score = None
+    Search_Network = None
+    Reman_Part = None
+    Pkg_Qty = None
+    Seed_Part = None
 
     data = {
         'message': update_part_number(d, part.strip()),
@@ -109,6 +109,9 @@ for part in files:
             freezecode = i['returnValue']['FreezeCode']
         if i['id'] == '911;a':
             Search_Network = i['returnValue']['SearchNWAsList']
+        if i['id'] == '932;a':
+            if i.get('returnValue', [{}])[0].get('Seed_Part__c'):
+                Seed_Part = i['returnValue'][0]['Seed_Part__c']
 
     PV.append({
         'part_number': part_number,
@@ -122,23 +125,22 @@ for part in files:
         'Constrained_Part_Score_Desc': Constrained_Part_Score,
         'Reman_Part': Reman_Part,
         'Search_Network': Search_Network,
-        'Pkg_Qty': Pkg_Qty
-
+        'Pkg_Qty': Pkg_Qty,
+        'Seed_Part': Seed_Part
     })
 
-    PV.append({
-        'part_number': part_number,
-        'facing_facility': facing_facility,
-        'replacement_part': replacement_part,
-        'entry_point': entry_point,
-        'part_description': part_description,
-        'supplier_lead_time': supplier_lead_time,
-        'discontinued': discontinued,
-        'freezecode': freezecode,
-        'Constrained_Part_Score_Desc': Constrained_Part_Score,
-        'Search_Network': Search_Network
+    # PV.append({
+    #     'part_number': part_number,
+    #     'facing_facility': facing_facility,
+    #     'replacement_part': replacement_part,
+    #     'entry_point': entry_point,
+    #     'part_description': part_description,
+    #     'supplier_lead_time': supplier_lead_time,
+    #     'discontinued': discontinued,
+    #     'freezecode': freezecode,
+    #     'Constrained_Part_Score_Desc': Constrained_Part_Score,
+    #     'Search_Network': Search_Network
+    # })
 
-    })
-
-with open('my_data.json','w') as f:
+with open('my_data.json', 'w') as f:
     json.dump(PV, f)
